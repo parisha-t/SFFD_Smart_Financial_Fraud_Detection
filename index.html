@@ -1,0 +1,839 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Smart Financial Fraud Detection Engine</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    :root {
+      --bg-dark: #070d18;
+      --card-bg: #0b1528;
+      --card-border: #162544;
+      --card-inner: #070f1e;
+      --accent-cyan: #38bdf8;
+      --accent-blue: #2563eb;
+      --text-main: #f1f5f9;
+      --text-muted: #94a3b8;
+      --green: #10b981;
+      --red: #f43f5e;
+      --amber: #f59e0b;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Plus Jakarta Sans', sans-serif; }
+    body { background-color: var(--bg-dark); color: var(--text-main); padding: 20px 30px; }
+    .mono { font-family: 'JetBrains Mono', monospace; }
+
+    /* Top Navbar */
+    .header-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+    .brand-group { display: flex; align-items: center; gap: 14px; }
+    .brand-icon {
+      width: 38px; height: 38px; border-radius: 10px;
+      background: linear-gradient(135deg, #0284c7, #2563eb);
+      display: flex; align-items: center; justify-content: center;
+      color: #fff; font-size: 18px; box-shadow: 0 0 15px rgba(56, 189, 248, 0.3);
+    }
+    .brand-title { font-size: 20px; font-weight: 800; letter-spacing: -0.5px; }
+    .brand-sub { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
+    .header-actions { display: flex; align-items: center; gap: 12px; }
+    .status-pill {
+      background: #022c22; color: #34d399; border: 1px solid #059669;
+      font-size: 12px; font-weight: 700; padding: 5px 12px; border-radius: 20px;
+      display: flex; align-items: center; gap: 6px;
+    }
+    .status-pill::before { content: ""; width: 7px; height: 7px; background: #34d399; border-radius: 50%; display: inline-block; }
+    .btn-top {
+      background: #0f1c36; color: var(--text-muted); border: 1px solid var(--card-border);
+      padding: 6px 14px; border-radius: 8px; font-size: 12px; font-weight: 600; cursor: pointer;
+    }
+
+    /* Top Metric Stat Cards */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+      margin-bottom: 20px;
+    }
+    .stat-card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 14px;
+      padding: 18px 22px;
+      position: relative;
+    }
+    .stat-label {
+      font-size: 11px; font-weight: 800; text-transform: uppercase;
+      color: var(--text-muted); letter-spacing: 0.5px;
+      display: flex; justify-content: space-between; align-items: center;
+    }
+    .stat-val { font-size: 30px; font-weight: 800; margin-top: 10px; font-family: 'JetBrains Mono', monospace; }
+    .stat-sub { font-size: 12px; color: var(--text-muted); margin-top: 4px; }
+
+    /* Quick Presets Bar */
+    .presets-bar {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 12px;
+      padding: 12px 20px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      margin-bottom: 22px;
+    }
+    .presets-title { font-size: 11px; font-weight: 800; color: #fbbf24; text-transform: uppercase; letter-spacing: 0.5px; }
+    .btn-preset {
+      padding: 6px 14px; border-radius: 8px; font-size: 12px; font-weight: 700;
+      cursor: pointer; border: 1px solid transparent; transition: all 0.2s;
+    }
+    .btn-preset-norm { background: #022c22; color: #34d399; border-color: #059669; }
+    .btn-preset-fraud { background: #3b0716; color: #fb7185; border-color: #e11d48; }
+    .btn-preset-rand { background: #0f1c36; color: var(--text-muted); border-color: var(--card-border); }
+    .btn-preset-reset { background: #0f1c36; color: var(--text-muted); border-color: var(--card-border); }
+
+    /* Main 3 Input Cards Grid */
+    .main-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 18px;
+      margin-bottom: 24px;
+    }
+    .input-card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 14px;
+      padding: 20px;
+    }
+    .card-head {
+      display: flex; justify-content: space-between; align-items: center;
+      margin-bottom: 18px;
+    }
+    .card-title-text { font-size: 13.5px; font-weight: 700; color: #f8fafc; }
+    .card-tag {
+      background: #081120; border: 1px solid #1e293b; color: #64748b;
+      font-size: 10px; font-weight: 800; padding: 2px 6px; border-radius: 4px;
+    }
+
+    .form-group { margin-bottom: 16px; }
+    .form-label-row {
+      display: flex; justify-content: space-between; align-items: center;
+      font-size: 12px; font-weight: 600; color: var(--text-muted); margin-bottom: 6px;
+    }
+    .badge-val { color: var(--accent-cyan); font-family: 'JetBrains Mono', monospace; font-weight: 700; }
+    .inp-text {
+      width: 100%; background: #060e1d; border: 1px solid #1e293b;
+      border-radius: 8px; padding: 8px 12px; color: #f1f5f9;
+      font-family: 'JetBrains Mono', monospace; font-size: 13px; outline: none;
+    }
+    .amount-chips { display: flex; gap: 8px; margin-top: 8px; }
+    .chip {
+      background: #0c1a33; border: 1px solid #1e293b; border-radius: 6px;
+      padding: 4px 8px; font-size: 11px; font-family: 'JetBrains Mono', monospace;
+      color: var(--text-muted); cursor: pointer; flex: 1; text-align: center;
+    }
+
+    input[type="range"] {
+      width: 100%; height: 5px; background: #162544; border-radius: 3px;
+      outline: none; -webkit-appearance: none;
+    }
+    input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none; width: 15px; height: 15px; border-radius: 50%;
+      background: var(--accent-cyan); cursor: pointer;
+      box-shadow: 0 0 10px rgba(56, 189, 248, 0.8);
+    }
+    .range-limits {
+      display: flex; justify-content: space-between; font-size: 10px;
+      color: #475569; font-family: 'JetBrains Mono', monospace; margin-top: 2px;
+    }
+
+    /* Assess Button */
+    .assess-btn-wrap { text-align: center; margin-bottom: 22px; }
+    .btn-assess {
+      background: linear-gradient(135deg, #0284c7, #2563eb);
+      color: #fff; font-size: 15px; font-weight: 700;
+      padding: 12px 32px; border-radius: 10px; border: none; cursor: pointer;
+      box-shadow: 0 0 25px rgba(37, 99, 235, 0.4);
+    }
+
+    /* Decision Banner */
+    .decision-banner {
+      border-radius: 12px; padding: 18px 24px;
+      display: flex; justify-content: space-between; align-items: center;
+      margin-bottom: 24px; transition: all 0.3s;
+    }
+    .banner-danger {
+      background: linear-gradient(90deg, rgba(225, 29, 72, 0.15), rgba(15, 23, 42, 0.8));
+      border: 1px solid #e11d48; box-shadow: 0 0 25px rgba(225, 29, 72, 0.2);
+    }
+    .banner-success {
+      background: linear-gradient(90deg, rgba(16, 185, 129, 0.15), rgba(15, 23, 42, 0.8));
+      border: 1px solid #10b981; box-shadow: 0 0 25px rgba(16, 185, 129, 0.2);
+    }
+    .decision-title { font-size: 15px; font-weight: 800; display: flex; align-items: center; gap: 8px; }
+    .decision-sub { font-size: 12px; color: var(--text-muted); margin-top: 4px; }
+    .decision-metrics { display: flex; gap: 30px; text-align: right; }
+    .d-metric-lbl { font-size: 10px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; }
+    .d-metric-val { font-size: 22px; font-weight: 800; font-family: 'JetBrains Mono', monospace; }
+
+    /* Middle Row: Gauge & Breakdown */
+    .analysis-grid {
+      display: grid;
+      grid-template-columns: 1fr 1.25fr;
+      gap: 18px;
+      margin-bottom: 24px;
+    }
+    .gauge-card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 14px;
+      padding: 22px;
+      text-align: center;
+    }
+    .gauge-container { position: relative; width: 220px; height: 120px; margin: 15px auto 5px auto; }
+    .gauge-svg { width: 220px; height: 120px; }
+    .gauge-center-text {
+      position: absolute; bottom: 0; left: 0; right: 0;
+      text-align: center;
+    }
+    .gauge-pct { font-size: 32px; font-weight: 800; font-family: 'JetBrains Mono', monospace; line-height: 1; }
+    .gauge-status { font-size: 11px; font-weight: 800; text-transform: uppercase; margin-top: 4px; }
+    .gauge-footer { display: flex; justify-content: space-between; font-size: 11px; color: #475569; margin-top: 15px; }
+
+    /* Breakdown Progress Bars */
+    .breakdown-card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 14px;
+      padding: 22px;
+    }
+    .progress-row { margin-bottom: 12px; }
+    .p-head { display: flex; justify-content: space-between; font-size: 12px; font-weight: 600; margin-bottom: 4px; }
+    .p-bar-bg { width: 100%; height: 7px; background: #070f1e; border-radius: 4px; overflow: hidden; }
+    .p-bar-fill { height: 100%; border-radius: 4px; }
+    .breakdown-foot {
+      display: flex; justify-content: space-between; font-size: 12px;
+      color: var(--text-muted); border-top: 1px solid var(--card-border);
+      padding-top: 10px; margin-top: 12px;
+    }
+
+    /* Bottom: Benchmarking Table */
+    .table-card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 14px;
+      padding: 22px;
+      margin-bottom: 24px;
+    }
+    table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    th {
+      text-align: left; font-size: 11px; font-weight: 800; text-transform: uppercase;
+      color: var(--text-muted); border-bottom: 1px solid var(--card-border); padding: 10px 14px;
+    }
+    td { padding: 12px 14px; border-bottom: 1px solid #0f1c36; }
+    .badge-pill-green {
+      background: #022c22; color: #34d399; border: 1px solid #059669;
+      font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 12px;
+    }
+    .badge-pill-blue {
+      background: #082f49; color: #38bdf8; border: 1px solid #0284c7;
+      font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 12px;
+    }
+
+    /* Live Stream Cards & Bottom Action Bar */
+    .stream-section {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 14px;
+      padding: 16px 20px;
+    }
+    .stream-header {
+      display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;
+      font-size: 11px; font-weight: 800; color: var(--text-muted); text-transform: uppercase;
+    }
+    .stream-grid {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+    .stream-card {
+      background: #060e1d;
+      border: 1px solid var(--card-border);
+      border-radius: 10px;
+      padding: 10px 14px;
+    }
+    .sc-head { display: flex; justify-content: space-between; font-size: 12px; font-weight: 700; margin-bottom: 4px; }
+    .sc-sub { font-size: 11px; color: var(--text-muted); }
+
+    .bottom-actions {
+      display: flex; justify-content: flex-end; gap: 12px;
+      border-top: 1px solid var(--card-border); padding-top: 14px;
+    }
+    .btn-action {
+      background: #0f1c36; color: #f1f5f9; border: 1px solid var(--card-border);
+      padding: 8px 16px; border-radius: 8px; font-size: 12.5px; font-weight: 600;
+      cursor: pointer; display: flex; align-items: center; gap: 8px;
+    }
+    .btn-action:hover { background: #162544; }
+  </style>
+</head>
+<body>
+
+  <!-- Top Navbar -->
+  <div class="header-bar">
+    <div class="brand-group">
+      <div class="brand-icon"><i class="fa-solid fa-shield-halved"></i></div>
+      <div>
+        <div class="brand-title">Smart Financial Fraud Detection Engine</div>
+        <div class="brand-sub">
+          B.Tech CSE Summer Training Capstone - YBI Foundation
+        </div>
+      </div>
+    </div>
+    <div class="header-actions">
+      <div class="status-pill">ENGINE ONLINE (V2.4)</div>
+      <button class="btn-top"><i class="fa-solid fa-volume-high me-1"></i>Audio Alert: ON</button>
+    </div>
+  </div>
+
+  <!-- Top 4 Stats Cards -->
+  <div class="stats-grid">
+    <div class="stat-card">
+      <div class="stat-label">ENGINE ACCURACY <span style="color: #f43f5e;">🎯</span></div>
+      <div class="stat-val" style="color: #34d399;">99.6%</div>
+      <div class="stat-sub">Random Forest Ensemble</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">NEURAL NETWORK ROC-AUC <span style="color: #38bdf8;">📈</span></div>
+      <div class="stat-val" style="color: #38bdf8;">0.993</div>
+      <div class="stat-sub">Deep Dense Architecture</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">EVALUATED CORPUS <span style="color: #a855f7;">🗄️</span></div>
+      <div class="stat-val">50,000</div>
+      <div class="stat-sub">creditcard_2023 Dataset</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">REAL-TIME LATENCY <span style="color: #fbbf24;">⚡</span></div>
+      <div class="stat-val" style="color: #fbbf24;">&lt; 15 ms</div>
+      <div class="stat-sub">Tensor Ingestion Runtime</div>
+    </div>
+  </div>
+
+  <!-- Quick Presets -->
+  <div class="presets-bar">
+    <div class="presets-title"><i class="fa-solid fa-bolt me-1"></i>QUICK EVALUATION PRESETS:</div>
+    <button class="btn-preset btn-preset-norm" onclick="loadPreset('normal')">
+      🟢 Load Normal Sample (V4=0.2, V14=-0.1, $120)
+    </button>
+    <button class="btn-preset btn-preset-fraud" onclick="loadPreset('fraud')">
+      🚨 Load High-Risk Sample (V4=3.8, V14=-4.6, $8,500)
+    </button>
+    <button class="btn-preset btn-preset-rand" onclick="randomizeInputs()">
+      🎲 Randomize Vector
+    </button>
+    <button class="btn-preset btn-preset-reset" onclick="loadPreset('normal')">
+      🔄 Reset
+    </button>
+  </div>
+
+  <!-- 3 Input Cards Grid -->
+  <div class="main-grid">
+    
+    <!-- Card A: Transaction Metadata -->
+    <div class="input-card">
+      <div class="card-head">
+        <span class="card-title-text">💳 Card A: Transaction Metadata</span>
+        <span class="card-tag">PAYLOAD</span>
+      </div>
+      <div class="form-group">
+        <div class="form-label-row">
+          <span>Transaction Amount ($)</span>
+          <span class="badge-val" id="disp_amount">$289.50</span>
+        </div>
+        <input type="number" id="inp_amount" class="inp-text" value="289.50" oninput="runAssessment()">
+        <div class="amount-chips">
+          <div class="chip" onclick="setAmt(50)">$50</div>
+          <div class="chip" onclick="setAmt(250)">$250</div>
+          <div class="chip" onclick="setAmt(5000)">$5,000</div>
+          <div class="chip" onclick="setAmt(25000)">$25,000</div>
+        </div>
+      </div>
+      <div class="form-group">
+        <div class="form-label-row">
+          <span>Time Elapsed / Step Delta (Seconds)</span>
+          <span class="badge-val" id="disp_time">1,250s</span>
+        </div>
+        <input type="number" id="inp_time" class="inp-text" value="1250" oninput="runAssessment()">
+      </div>
+      <div class="form-group">
+        <label class="form-label-row"><span>Transaction Channel</span></label>
+        <select id="inp_channel" class="inp-text" onchange="runAssessment()">
+          <option value="cnp">Card-Not-Present (Online)</option>
+          <option value="pos">POS Terminal (Chip/PIN)</option>
+          <option value="intl">Cross-Border Wire</option>
+        </select>
+      </div>
+      <div style="font-size: 11px; color: #475569; margin-top: 14px;">
+        🔒 <strong style="color: #64748b;">PCI-DSS Scrambled:</strong> Payload normalized against historical distribution standard deviation.
+      </div>
+    </div>
+
+    <!-- Card B: Primary Latent Factors -->
+    <div class="input-card">
+      <div class="card-head">
+        <span class="card-title-text">📌 Card B: Primary Latent Factors</span>
+        <span class="card-tag">PCA GROUP A</span>
+      </div>
+      <div class="form-group">
+        <div class="form-label-row">
+          <span>V1 (Spending Pattern Shifts)</span>
+          <span class="badge-val" id="lbl_v1">-1.85</span>
+        </div>
+        <input type="range" id="v1" min="-6" max="6" step="0.05" value="-1.85" oninput="runAssessment()">
+        <div class="range-limits"><span>-6.00</span><span>0.00</span><span>+6.00</span></div>
+      </div>
+      <div class="form-group">
+        <div class="form-label-row">
+          <span>V2 (Behavioral Drift)</span>
+          <span class="badge-val" id="lbl_v2">2.15</span>
+        </div>
+        <input type="range" id="v2" min="-6" max="6" step="0.05" value="2.15" oninput="runAssessment()">
+        <div class="range-limits"><span>-6.00</span><span>0.00</span><span>+6.00</span></div>
+      </div>
+      <div class="form-group">
+        <div class="form-label-row">
+          <span>V3 (Terminal Velocity)</span>
+          <span class="badge-val" id="lbl_v3">-1.38</span>
+        </div>
+        <input type="range" id="v3" min="-6" max="6" step="0.05" value="-1.38" oninput="runAssessment()">
+        <div class="range-limits"><span>-6.00</span><span>0.00</span><span>+6.00</span></div>
+      </div>
+      <div class="form-group">
+        <div class="form-label-row">
+          <span>V4 (Critical Anomaly Metric - Weight: 0.28)</span>
+          <span class="badge-val" style="color: #f43f5e;" id="lbl_v4">3.48</span>
+        </div>
+        <input type="range" id="v4" min="-6" max="6" step="0.05" value="3.48" oninput="runAssessment()">
+        <div class="range-limits"><span>-6.00</span><span>0.00</span><span>+6.00</span></div>
+      </div>
+      <div class="form-group">
+        <div class="form-label-row">
+          <span>V10 (Cardholder Geodrift)</span>
+          <span class="badge-val" id="lbl_v10">-2.90</span>
+        </div>
+        <input type="range" id="v10" min="-6" max="6" step="0.05" value="-2.90" oninput="runAssessment()">
+        <div class="range-limits"><span>-6.00</span><span>0.00</span><span>+6.00</span></div>
+      </div>
+    </div>
+
+    <!-- Card C: High-Sensitivity Features -->
+    <div class="input-card">
+      <div class="card-head">
+        <span class="card-title-text">🔬 Card C: High-Sensitivity Features</span>
+        <span class="card-tag">PCA GROUP B</span>
+      </div>
+      <div class="form-group">
+        <div class="form-label-row">
+          <span>V12 (Sensitivity Weight: 0.25)</span>
+          <span class="badge-val" id="lbl_v12">-3.10</span>
+        </div>
+        <input type="range" id="v12" min="-6" max="6" step="0.05" value="-3.10" oninput="runAssessment()">
+        <div class="range-limits"><span>-6.00</span><span>0.00</span><span>+6.00</span></div>
+      </div>
+      <div class="form-group">
+        <div class="form-label-row">
+          <span>V14 (Primary Fraud Trigger - Weight: 0.40)</span>
+          <span class="badge-val" style="color: #f43f5e;" id="lbl_v14">-4.50</span>
+        </div>
+        <input type="range" id="v14" min="-6" max="6" step="0.05" value="-4.50" oninput="runAssessment()">
+        <div class="range-limits"><span>-6.00</span><span>0.00</span><span>+6.00</span></div>
+      </div>
+      <div class="form-group">
+        <div class="form-label-row">
+          <span>V17 (Security Factor - Weight: 0.30)</span>
+          <span class="badge-val" id="lbl_v17">-2.80</span>
+        </div>
+        <input type="range" id="v17" min="-6" max="6" step="0.05" value="-2.80" oninput="runAssessment()">
+        <div class="range-limits"><span>-6.00</span><span>0.00</span><span>+6.00</span></div>
+      </div>
+      <div class="form-group">
+        <div class="form-label-row">
+          <span>V20 (Account Age & Velocity Variance)</span>
+          <span class="badge-val" id="lbl_v20">0.45</span>
+        </div>
+        <input type="range" id="v20" min="-6" max="6" step="0.05" value="0.45" oninput="runAssessment()">
+        <div class="range-limits"><span>-6.00</span><span>0.00</span><span>+6.00</span></div>
+      </div>
+      <div class="form-group">
+        <div class="form-label-row">
+          <span>V28 (Channel Dispersion Variance)</span>
+          <span class="badge-val" id="lbl_v28">-0.15</span>
+        </div>
+        <input type="range" id="v28" min="-6" max="6" step="0.05" value="-0.15" oninput="runAssessment()">
+        <div class="range-limits"><span>-6.00</span><span>0.00</span><span>+6.00</span></div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Run Assessment Button -->
+  <div class="assess-btn-wrap">
+    <button class="btn-assess" onclick="runAssessment()">
+      🚀 Run Fraud Assessment <span style="font-size: 11px; font-weight: 500; opacity: 0.8;">(Evaluate Weights)</span>
+    </button>
+  </div>
+
+  <!-- Dynamic Decision Banner -->
+  <div id="decision_banner" class="decision-banner banner-danger">
+    <div>
+      <div class="decision-title" id="d_title">
+        <span>🚨 FRAUDULENT TRANSACTION DETECTED</span>
+      </div>
+      <div class="decision-sub" id="d_sub">
+        Status: Blocked | Trigger Step-Up Re-Authentication | Token Frozen | Notify Fraud Ops
+      </div>
+    </div>
+    <div class="decision-metrics">
+      <div>
+        <div class="d-metric-lbl">ANOMALY INDEX</div>
+        <div class="d-metric-val" id="d_index">4.589</div>
+      </div>
+      <div>
+        <div class="d-metric-lbl">FRAUD PROBABILITY</div>
+        <div class="d-metric-val" style="color: #f43f5e;" id="d_prob">80.0%</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Gauge & Latent Breakdown Grid -->
+  <div class="analysis-grid">
+    
+    <!-- Dynamic Risk Gauge -->
+    <div class="gauge-card">
+      <div class="card-head">
+        <span class="card-title-text">🎯 Dynamic Risk Gauge</span>
+        <span class="card-tag">PROBABILITY INDEX</span>
+      </div>
+      <div class="gauge-container">
+        <svg class="gauge-svg" viewBox="0 0 200 110">
+          <path d="M 20 100 A 80 80 0 0 1 180 100" fill="none" stroke="#162544" stroke-width="16" stroke-linecap="round"/>
+          <path id="gauge_arc" d="M 20 100 A 80 80 0 0 1 180 100" fill="none" stroke="#f43f5e" stroke-width="16" stroke-linecap="round" stroke-dasharray="251" stroke-dashoffset="50"/>
+        </svg>
+        <div class="gauge-center-text">
+          <div class="gauge-pct" id="g_pct" style="color: #f1f5f9;">80.0%</div>
+          <div class="gauge-status" id="g_status" style="color: #f43f5e;">CRITICAL FRAUD RISK</div>
+        </div>
+      </div>
+      <div class="gauge-footer">
+        <span>0.0% Legitimate</span>
+        <span style="color: #f43f5e;">Threshold: 50.0%</span>
+        <span>100.0% Anomalous</span>
+      </div>
+    </div>
+
+    <!-- Latent Component Breakdown -->
+    <div class="breakdown-card">
+      <div class="card-head">
+        <span class="card-title-text">🔬 Latent Component Anomaly Breakdown</span>
+        <span class="card-tag">WEIGHT DECOMPOSITION</span>
+      </div>
+      
+      <div class="progress-row">
+        <div class="p-head"><span>V14 Component (|V14| × 0.40)</span><span class="mono" id="b_v14">1.800</span></div>
+        <div class="p-bar-bg"><div id="bar_v14" class="p-bar-fill" style="width: 90%; background: #f43f5e;"></div></div>
+      </div>
+      <div class="progress-row">
+        <div class="p-head"><span>V4 Component (|V4| × 0.28)</span><span class="mono" id="b_v4">0.952</span></div>
+        <div class="p-bar-bg"><div id="bar_v4" class="p-bar-fill" style="width: 50%; background: #f43f5e;"></div></div>
+      </div>
+      <div class="progress-row">
+        <div class="p-head"><span>V17 Component (|V17| × 0.30)</span><span class="mono" id="b_v17">0.840</span></div>
+        <div class="p-bar-bg"><div id="bar_v17" class="p-bar-fill" style="width: 45%; background: #f43f5e;"></div></div>
+      </div>
+      <div class="progress-row">
+        <div class="p-head"><span>V12 Component (|V12| × 0.25)</span><span class="mono" id="b_v12">0.775</span></div>
+        <div class="p-bar-bg"><div id="bar_v12" class="p-bar-fill" style="width: 40%; background: #fbbf24;"></div></div>
+      </div>
+      <div class="progress-row">
+        <div class="p-head"><span>V1 Component (|V1| × 0.12)</span><span class="mono" id="b_v1">0.222</span></div>
+        <div class="p-bar-bg"><div id="bar_v1" class="p-bar-fill" style="width: 15%; background: #34d399;"></div></div>
+      </div>
+
+      <div class="breakdown-foot">
+        <div>Sum Index: <strong id="foot_sum" class="mono">4.589</strong> (Threshold: 3.200)</div>
+        <div style="color: #f43f5e; font-weight: 700;" id="foot_diff">+1.389 High Anomaly</div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Benchmarking Table -->
+  <div class="table-card">
+    <div class="card-head">
+      <span class="card-title-text">📊 Machine Learning & Deep Learning Benchmarking</span>
+      <span class="card-tag">CORPUS 2023</span>
+    </div>
+    <table>
+      <thead>
+        <tr>
+          <th>MODEL ARCHITECTURE</th>
+          <th>CLASSIFICATION ACCURACY</th>
+          <th>ROC-AUC SCORE</th>
+          <th>INFERENCE LATENCY</th>
+          <th>ARCHITECTURE ROLE</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>Logistic Regression (Baseline)</strong></td>
+          <td class="mono">96.5%</td>
+          <td class="mono">0.993</td>
+          <td class="mono">&lt; 2 ms</td>
+          <td style="color: var(--text-muted);">Linear Statistical Baseline</td>
+        </tr>
+        <tr>
+          <td><strong>Decision Tree (Pruned)</strong></td>
+          <td class="mono">95.9%</td>
+          <td class="mono">0.985</td>
+          <td class="mono">&lt; 4 ms</td>
+          <td style="color: var(--text-muted);">Interpretable Rule Tree</td>
+        </tr>
+        <tr>
+          <td><strong style="color: #34d399;">🌲 Random Forest Classifier</strong></td>
+          <td><strong style="color: #34d399;" class="mono">98.0% (99.6% Peak)</strong></td>
+          <td><strong style="color: #34d399;" class="mono">0.998</strong></td>
+          <td class="mono">&lt; 12 ms</td>
+          <td><span class="badge-pill-green">● Production Ensemble</span></td>
+        </tr>
+        <tr>
+          <td><strong style="color: #38bdf8;">🧠 Artificial Neural Network (ANN)</strong></td>
+          <td><strong style="color: #38bdf8;" class="mono">99.4% (99.8% Test)</strong></td>
+          <td><strong style="color: #38bdf8;" class="mono">0.993</strong></td>
+          <td class="mono">&lt; 15 ms</td>
+          <td><span class="badge-pill-blue">★ Deep Representation Champion</span></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Real-Time Simulated Stream & Bottom Action Bar -->
+  <div class="stream-section">
+    <div class="stream-header">
+      <span>📡 REAL-TIME SIMULATED INGESTION STREAM (PCI-DSS GATEWAY)</span>
+      <span style="color: #34d399;">● AUTO-SYNCING (50K CORPUS)</span>
+    </div>
+    <div class="stream-grid">
+      <div class="stream-card">
+        <div class="sc-head"><span>TXN-90412</span><span style="color: #34d399;">CLEARED</span></div>
+        <div class="sc-sub">POS Terminal • $49.99</div>
+      </div>
+      <div class="stream-card">
+        <div class="sc-head"><span>TXN-90413</span><span style="color: #f43f5e;">FLAGGED</span></div>
+        <div class="sc-sub">Intl Gateway • $3,400.00</div>
+      </div>
+      <div class="stream-card">
+        <div class="sc-head"><span>TXN-90414</span><span style="color: #34d399;">CLEARED</span></div>
+        <div class="sc-sub">CNP Online • $12.50</div>
+      </div>
+      <div class="stream-card">
+        <div class="sc-head"><span>TXN-90415</span><span style="color: #fbbf24;">STEP-UP RE-AUTH</span></div>
+        <div class="sc-sub">CNP Online • $1,299.00</div>
+      </div>
+      <div class="stream-card">
+        <div class="sc-head"><span>TXN-90416</span><span style="color: #34d399;">CLEARED</span></div>
+        <div class="sc-sub">POS Terminal • $180.25</div>
+      </div>
+    </div>
+
+    <div class="bottom-actions">
+      <button class="btn-action" onclick="downloadJSON()"><i class="fa-solid fa-file-arrow-down me-1"></i> Download Audit Log (JSON)</button>
+    </div>
+  </div>
+
+  <script>
+    function setAmt(val) {
+      document.getElementById('inp_amount').value = val.toFixed(2);
+      runAssessment();
+    }
+
+    function runAssessment() {
+      const amt = parseFloat(document.getElementById('inp_amount').value) || 0;
+      const v1 = parseFloat(document.getElementById('v1').value);
+      const v2 = parseFloat(document.getElementById('v2').value);
+      const v3 = parseFloat(document.getElementById('v3').value);
+      const v4 = parseFloat(document.getElementById('v4').value);
+      const v10 = parseFloat(document.getElementById('v10').value);
+      const v12 = parseFloat(document.getElementById('v12').value);
+      const v14 = parseFloat(document.getElementById('v14').value);
+      const v17 = parseFloat(document.getElementById('v17').value);
+      const v20 = parseFloat(document.getElementById('v20').value);
+      const v28 = parseFloat(document.getElementById('v28').value);
+
+      document.getElementById('disp_amount').innerText = '$' + amt.toLocaleString('en-US', {minimumFractionDigits: 2});
+      document.getElementById('lbl_v1').innerText = v1.toFixed(2);
+      document.getElementById('lbl_v2').innerText = v2.toFixed(2);
+      document.getElementById('lbl_v3').innerText = v3.toFixed(2);
+      document.getElementById('lbl_v4').innerText = v4.toFixed(2);
+      document.getElementById('lbl_v10').innerText = v10.toFixed(2);
+      document.getElementById('lbl_v12').innerText = v12.toFixed(2);
+      document.getElementById('lbl_v14').innerText = v14.toFixed(2);
+      document.getElementById('lbl_v17').innerText = v17.toFixed(2);
+      document.getElementById('lbl_v20').innerText = v20.toFixed(2);
+      document.getElementById('lbl_v28').innerText = v28.toFixed(2);
+
+      const c_v14 = Math.abs(v14) * 0.40;
+      const c_v4 = Math.abs(v4) * 0.28;
+      const c_v17 = Math.abs(v17) * 0.30;
+      const c_v12 = Math.abs(v12) * 0.25;
+      const c_v1 = Math.abs(v1) * 0.12;
+
+      document.getElementById('b_v14').innerText = c_v14.toFixed(3);
+      document.getElementById('b_v4').innerText = c_v4.toFixed(3);
+      document.getElementById('b_v17').innerText = c_v17.toFixed(3);
+      document.getElementById('b_v12').innerText = c_v12.toFixed(3);
+      document.getElementById('b_v1').innerText = c_v1.toFixed(3);
+
+      document.getElementById('bar_v14').style.width = Math.min(100, (c_v14 / 2.0) * 100) + '%';
+      document.getElementById('bar_v4').style.width = Math.min(100, (c_v4 / 1.5) * 100) + '%';
+      document.getElementById('bar_v17').style.width = Math.min(100, (c_v17 / 1.5) * 100) + '%';
+      document.getElementById('bar_v12').style.width = Math.min(100, (c_v12 / 1.5) * 100) + '%';
+      document.getElementById('bar_v1').style.width = Math.min(100, (c_v1 / 1.0) * 100) + '%';
+
+      const sumIndex = c_v14 + c_v4 + c_v17 + c_v12 + c_v1;
+      document.getElementById('d_index').innerText = sumIndex.toFixed(3);
+      document.getElementById('foot_sum').innerText = sumIndex.toFixed(3);
+
+      const diff = sumIndex - 3.20;
+      const footDiff = document.getElementById('foot_diff');
+      if (diff > 0) {
+        footDiff.innerText = '+' + diff.toFixed(3) + ' High Anomaly';
+        footDiff.style.color = '#f43f5e';
+      } else {
+        footDiff.innerText = diff.toFixed(3) + ' Within Safe Bounds';
+        footDiff.style.color = '#34d399';
+      }
+
+      const fraudProb = 1.0 / (1.0 + Math.exp(-(sumIndex - 3.20)));
+      const pct = (fraudProb * 100).toFixed(1);
+
+      document.getElementById('d_prob').innerText = pct + '%';
+      document.getElementById('g_pct').innerText = pct + '%';
+
+      const offset = 251 - (251 * (fraudProb * 0.9));
+      document.getElementById('gauge_arc').style.strokeDashoffset = Math.max(0, offset);
+
+      const banner = document.getElementById('decision_banner');
+      const dTitle = document.getElementById('d_title');
+      const dSub = document.getElementById('d_sub');
+      const gStatus = document.getElementById('g_status');
+      const gArc = document.getElementById('gauge_arc');
+      const dProb = document.getElementById('d_prob');
+
+      if (fraudProb >= 0.50) {
+        banner.className = 'decision-banner banner-danger';
+        dTitle.innerHTML = '🚨 FRAUDULENT TRANSACTION DETECTED';
+        dSub.innerText = 'Status: Blocked | Trigger Step-Up Re-Authentication | Token Frozen | Notify Fraud Ops';
+        gStatus.innerText = 'CRITICAL FRAUD RISK';
+        gStatus.style.color = '#f43f5e';
+        gArc.style.stroke = '#f43f5e';
+        dProb.style.color = '#f43f5e';
+      } else if (fraudProb >= 0.20) {
+        banner.className = 'decision-banner';
+        banner.style.background = 'linear-gradient(90deg, rgba(245, 158, 11, 0.15), rgba(15, 23, 42, 0.8))';
+        banner.style.border = '1px solid #f59e0b';
+        dTitle.innerHTML = '⚠️ ELEVATED RISK: STEP-UP RE-AUTH REQUIRED';
+        dSub.innerText = 'Status: Pending | Secondary OTP Required | Velocity Limit Flagged';
+        gStatus.innerText = 'MODERATE SUSPICION';
+        gStatus.style.color = '#fbbf24';
+        gArc.style.stroke = '#fbbf24';
+        dProb.style.color = '#fbbf24';
+      } else {
+        banner.className = 'decision-banner banner-success';
+        banner.style.background = 'linear-gradient(90deg, rgba(16, 185, 129, 0.15), rgba(15, 23, 42, 0.8))';
+        banner.style.border = '1px solid #10b981';
+        dTitle.innerHTML = '✅ VERIFIED: TRANSACTION LEGITIMATE';
+        dSub.innerText = 'Status: Cleared | Settlement Authorized | Latency < 15ms | PII Shield Active';
+        gStatus.innerText = 'LOW RISK / LEGITIMATE';
+        gStatus.style.color = '#34d399';
+        gArc.style.stroke = '#34d399';
+        dProb.style.color = '#34d399';
+      }
+    }
+
+    function loadPreset(type) {
+      if (type === 'normal') {
+        document.getElementById('inp_amount').value = "120.00";
+        document.getElementById('inp_time').value = "450";
+        document.getElementById('inp_channel').value = "pos";
+        document.getElementById('v1').value = "-0.15";
+        document.getElementById('v2').value = "0.10";
+        document.getElementById('v3').value = "0.05";
+        document.getElementById('v4').value = "0.20";
+        document.getElementById('v10').value = "-0.08";
+        document.getElementById('v12').value = "0.15";
+        document.getElementById('v14').value = "-0.10";
+        document.getElementById('v17').value = "0.10";
+        document.getElementById('v20').value = "0.02";
+        document.getElementById('v28').value = "0.01";
+      } else {
+        document.getElementById('inp_amount').value = "8500.00";
+        document.getElementById('inp_time').value = "1250";
+        document.getElementById('inp_channel').value = "intl";
+        document.getElementById('v1').value = "-1.85";
+        document.getElementById('v2').value = "2.15";
+        document.getElementById('v3').value = "-1.38";
+        document.getElementById('v4').value = "3.48";
+        document.getElementById('v10').value = "-2.90";
+        document.getElementById('v12').value = "-3.10";
+        document.getElementById('v14').value = "-4.50";
+        document.getElementById('v17').value = "-2.80";
+        document.getElementById('v20').value = "0.45";
+        document.getElementById('v28').value = "-0.15";
+      }
+      runAssessment();
+    }
+
+    function randomizeInputs() {
+      const r = () => ((Math.random() * 8) - 4).toFixed(2);
+      document.getElementById('v1').value = r();
+      document.getElementById('v2').value = r();
+      document.getElementById('v3').value = r();
+      document.getElementById('v4').value = r();
+      document.getElementById('v10').value = r();
+      document.getElementById('v12').value = r();
+      document.getElementById('v14').value = r();
+      document.getElementById('v17').value = r();
+      document.getElementById('v20').value = r();
+      document.getElementById('v28').value = r();
+      runAssessment();
+    }
+
+    function downloadJSON() {
+      const payload = {
+        candidate: "Parisha (992401030048)",
+        institution: "Jaypee Institute of Information Technology, Noida",
+        project: "Smart Financial Fraud Detection Engine",
+        evaluated_timestamp: new Date().toISOString(),
+        anomaly_index: document.getElementById('d_index').innerText,
+        fraud_probability: document.getElementById('d_prob').innerText,
+        verdict: document.getElementById('d_title').innerText.replace(/[^a-zA-Z0-9 ]/g, "").trim()
+      };
+      const blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" });
+      const a = document.createElement("a");
+      a.href = URL.createObjectURL(blob);
+      a.download = "Audit_Report_TXN_Evaluation.json";
+      a.click();
+    }
+
+    window.onload = runAssessment;
+  </script>
+</body>
+</html>
